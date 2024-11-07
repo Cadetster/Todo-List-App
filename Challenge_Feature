@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Daily Schedule Tracker</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            margin: 0;
+            background: linear-gradient(135deg, #4a90e2, #2ecc71); /* Gradient background */
+            transition: background 0.3s ease;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        /* Dark Mode */
+        .dark-mode {
+            background: linear-gradient(135deg, #34495e, #2c3e50); /* Dark mode gradient */
+            color: #f4f4f9;
+        }
+
+        .dark-mode h1 {
+            color: #ff6347;
+        }
+
+        /* Task Input Form */
+        .task-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 80%;
+            max-width: 700px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-input input, .task-input select {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task-input input:focus, .task-input select:focus {
+            border-color: #4a90e2;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .task-input button {
+            padding: 15px;
+            font-size: 1.1rem;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .task-input button:hover {
+            background-color: #357abd;
+        }
+
+        /* Task List */
+        .tasks-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .tasks-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .tasks-list li.completed {
+            background-color: #8fd9a8;
+            color: #6d5e5b;
+        }
+
+        .tasks-list li:hover {
+            background-color: #f3f3f3;
+        }
+
+        /* Task Checkbox */
+        .tasks-list input[type="checkbox"] {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        /* Delete Button */
+        .tasks-list button {
+            padding: 8px;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .tasks-list button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 80%;
+            max-width: 700px;
+            background-color: #ddd;
+            border-radius: 50px;
+            height: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4a90e2;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            width: 80%;
+            max-width: 700px;
+            font-size: 1.1rem;
+            color: #4a90e2;
+        }
+
+        .stats span {
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .dark-mode-btn {
+            padding: 12px 18px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-btn:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎯 Daily Schedule Tracker</h1>
+
+    <button class="dark-mode-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+    <!-- Task Input Form -->
+    <div class="task-input">
+        <input type="text" id="taskName" placeholder="Enter task name" required>
+        <input type="time" id="taskTime" required>
+        <select id="taskPriority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+        <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <!-- Task List -->
+    <ul id="tasksList" class="tasks-list"></ul>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats">
+        <span>Total Tasks: <span id="totalTasks">0</span></span>
+        <span>Completed: <span id="completedTasks">0</span></span>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Add task function
+        function addTask() {
+            const taskName = document.getElementById('taskName').value;
+            const taskTime = document.getElementById('taskTime').value;
+            const taskPriority = document.getElementById('taskPriority').value;
+
+            if (taskName && taskTime) {
+                const task = {
+                    name: taskName,
+                    time: taskTime,
+                    priority: taskPriority,
+                    completed: false
+                };
+                tasks.push(task);
+                document.getElementById('taskName').value = '';
+                document.getElementById('taskTime').value = '';
+                saveTasks();
+                renderTasks();
+                updateProgress();
+            }
+        }
+
+        // Render tasks
+        function renderTasks() {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.className = task.completed ? 'completed' : '';
+                taskItem.style.borderLeft = `5px solid ${task.priority === 'High' ? '#e74c3c' : task.priority === 'Medium' ? '#f39c12' : '#2ecc71'}`;
+
+                const taskText = document.createTextNode(`${task.name} - ${task.time}`);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('click', () => toggleTask(index));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteTask(index);
+
+                taskItem.appendChild(checkbox);
+                taskItem.appendChild(taskText);
+                taskItem.appendChild(deleteBtn);
+                tasksList.appendChild(taskItem);
+            });
+
+            updateStats();
+        }
+
+        // Toggle task completion
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            renderTasks();
+            updateProgress();
+        }
+
+        // Delete task
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+            updateProgress();
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            const completedCount = tasks.filter(task => task.completed).length;
+            document.getElementById('completedTasks').textContent = completedCount;
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(task => task.completed).length;
+            const progress = totalTasks ? (completedTasks / totalTasks) * 100 : 0;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        // Save tasks to local storage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Initial rendering of tasks
+        renderTasks();
+    </script>
+</body>
+</html>
